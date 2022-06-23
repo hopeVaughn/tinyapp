@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 ///////////////////////////////////////////////////////////////////////////////
 // set the view ingine to ejs
 ///////////////////////////////////////////////////////////////////////////////
-const generateRandomString = () => {
+const generateRandomString = function() {
   let randomString = '';
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -18,9 +18,7 @@ const generateRandomString = () => {
   return randomString;
 };
 
-
 app.set('view engine', 'ejs');
-
 
 
 const urlDatabase = {
@@ -43,8 +41,19 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  if (!urlDatabase[req.params.shortURL]) {
+    res.send('The shortened url has not been generated yet please try again');
+  }
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
+  const longURL = req.body.longURL;
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = longURL;
+  console.log(urlDatabase); // Log the POST request body to the console
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
