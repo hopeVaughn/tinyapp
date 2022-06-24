@@ -22,6 +22,11 @@
         </p>
       </div>
       <div class="card-footer text-muted"></div>
+      <h2 class="card-title">Edit</h2>
+      <form action="/urls/<%= shortURL %>" method="POST">
+        <input type="text" placeholder="http://" name="longURL" />
+        <button class="btn btn-primary">Submit</button>
+      </form>
     </div>
     <!-- Bootstrap JS -->
     <script

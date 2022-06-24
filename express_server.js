@@ -79,19 +79,29 @@ app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
   console.log(urlDatabase); // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  res.redirect("/urls");         // Respond with 'Ok' (we will replace this)
 });
 
 ///////////////////////////////////////////////////////////////////////////////
 // delete url action
 ///////////////////////////////////////////////////////////////////////////////
 
-app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
-  console.log(req.params.id);
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  console.log(req.params.shortURL);
   res.redirect("/urls");
 });
 
+///////////////////////////////////////////////////////////////////////////////
+// Edit url action
+///////////////////////////////////////////////////////////////////////////////
+
+app.post("/urls/:shortURL", (req, res) => {
+  const longURL = req.body.longURL;
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = longURL;
+  res.redirect("/urls");
+});
 ///////////////////////////////////////////////////////////////////////////////
 // PORT listening confirmation
 ///////////////////////////////////////////////////////////////////////////////
