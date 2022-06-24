@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = 8080; //default port
+const PORT = 8080;
 
 ///////////////////////////////////////////////////////////////////////////////
 // body-parse module
@@ -29,9 +29,8 @@ const generateRandomString = function() {
   return randomString;
 };
 
-
 ///////////////////////////////////////////////////////////////////////////////
-// set the view ingine to ejs
+// hardcoded initialized database
 ///////////////////////////////////////////////////////////////////////////////
 
 const urlDatabase = {
@@ -47,6 +46,7 @@ app.get('/urls', (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
+
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
@@ -83,10 +83,19 @@ app.post("/urls", (req, res) => {
 });
 
 ///////////////////////////////////////////////////////////////////////////////
+// delete url action
+///////////////////////////////////////////////////////////////////////////////
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  console.log(req.params.id);
+  res.redirect("/urls");
+});
+
+///////////////////////////////////////////////////////////////////////////////
 // PORT listening confirmation
 ///////////////////////////////////////////////////////////////////////////////
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port : ${PORT}!`);
 });
-
