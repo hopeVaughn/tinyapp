@@ -60,12 +60,12 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
+
 app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   const templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: longURL };
   res.render("urls_show", templateVars);
 });
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // redirect to longURL from shortURL param
@@ -108,6 +108,14 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie('username');
   res.redirect("/urls");
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// registration page
+///////////////////////////////////////////////////////////////////////////////
+
+app.get('/register', (req, res) => {
+  res.render("urls_register");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
