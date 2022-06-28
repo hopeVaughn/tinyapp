@@ -11,24 +11,23 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>Registration</title>
+    <title>Login Page</title>
   </head>
   <body>
     <%- include('partials/_header') %>
-    <h2>Create Account</h2>
-    <form action="/register" method="POST">
-      <b>E-mail Adress</b><br />
+    <h2><b>Login</b></h2>
+    <form action="/login" method="POST">
+      <b>Email</b><br />
       <input
         type="email"
         name="email"
-        placeholder="email@email.com"
         size="40"
+        placeholder="email@email.com"
       /><br />
-      <br />
       <b>Password</b><br />
-      <input type="password" name="password" placeholder="Password" /><br />
+      <input type="password" name="password" placeholder="password" /><br />
       <br />
-      <button type="submit" class="btn btn-primary">Register</button>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
   </body>
 </html>

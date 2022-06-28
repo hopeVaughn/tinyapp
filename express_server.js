@@ -23,6 +23,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 
 ///////////////////////////////////////////////////////////////////////////////
+// hardcoded initialized databases
+///////////////////////////////////////////////////////////////////////////////
+
+const urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xk": "http://www.google.com"
+};
+
+const users = {};
+
+///////////////////////////////////////////////////////////////////////////////
 // 6 character alphanumeric generator
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -36,34 +47,36 @@ const generateRandomString = function() {
   return randomString;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-// hardcoded initialized database
-///////////////////////////////////////////////////////////////////////////////
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xk": "http://www.google.com"
+const emailLookUp = function(email) {
+  for (const id in users) {
+    if (email === users[id].email) {
+      return true;
+    }
+  }
+  return false;
 };
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // routes render via urls
 ///////////////////////////////////////////////////////////////////////////////
 
 app.get('/urls', (req, res) => {
-  const templateVars = { username: req.cookies["username"], urls: urlDatabase };
+  const templateVars = { user: users[req.cookies["user_id"]], urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const templateVars = { user: users[req.cookies["user_id"]] };
   res.render("urls_new", templateVars);
 });
 
 
 app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  const templateVars = { username: req.cookies["username"], shortURL: req.params.shortURL, longURL: longURL };
+  const templateVars = { user: users[req.cookies["user_id"]], shortURL: req.params.shortURL, longURL: longURL };
   res.render("urls_show", templateVars);
 });
 
@@ -87,8 +100,8 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
-  console.log(urlDatabase); // Log the POST request body to the console
-  res.redirect("/urls");         // Respond with 'Ok' (we will replace this)
+  console.log(urlDatabase);
+  res.redirect("/urls");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,8 +109,18 @@ app.post("/urls", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-  console.log(req.body);
+  if (!emailLookUp(req.body.email)) {
+    return res.status(403).json({ msg: `No user found for ${req.body.email}, please try again` });
+  }
+  if (emailLookUp(req.body.email)) {
+    for (const id in users) {
+      if (req.body.password !== users[id].password) {
+        return res.status(403).send(`<h4>Invalid Password. Please Try Again</h4>`);
+      } else {
+        res.cookie('user_id', users[id].id);
+      }
+    }
+  }
   res.redirect("/urls");
 });
 
@@ -106,7 +129,7 @@ app.post("/login", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect("/urls");
 });
 
@@ -115,7 +138,40 @@ app.post("/logout", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 app.get('/register', (req, res) => {
-  res.render("urls_register");
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render("urls_register", templateVars);
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// login page
+///////////////////////////////////////////////////////////////////////////////
+
+app.get('/login', (req, res) => {
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render("urls_login", templateVars);
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// add new user to global users object
+///////////////////////////////////////////////////////////////////////////////
+
+app.post('/register', (req, res) => {
+  // emailLookUp(req.body.email)
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).json({ msg: 'Please enter in a valid email and passord to continue' });
+  }
+  if (emailLookUp(req.body.email)) {
+    return res.status(400).json({ msg: 'Email already exists. Please try again' });
+  }
+  const userID = generateRandomString();
+  users[userID] = {
+    id: userID,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie('user_id', userID);
+  console.log(users);
+  res.redirect("/urls");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
