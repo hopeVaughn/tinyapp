@@ -21,7 +21,7 @@
 
     <% if (!user) { %>
     <a href="/register"><b> &nbsp REGISTER&nbsp &nbsp</b></a>
-    <a href="/login"><b> &nbsp LOGIN &nbsp &nbsp</b></a>
+    <a href="/login"><b> &nbsp LOGIN &nbsp</b></a>
     <% } else { %> &nbsp; <%= user.email %>&nbsp;
     <form action="/logout" method="POST">
       <button type="submit" class="btn btn-primary">LOGOUT</button>&nbsp;

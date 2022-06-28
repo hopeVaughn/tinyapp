@@ -37,7 +37,7 @@ const generateRandomString = function() {
 const emailLookUp = function(email) {
   for (const id in users) {
     if (email === users[id].email) {
-      return true;
+      return users[id];
     }
   }
   return false;
@@ -113,18 +113,16 @@ app.post("/urls", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 app.post("/login", (req, res) => {
-  if (!emailLookUp(req.body.email)) {
+  const userLookup = emailLookUp(req.body.email);
+
+  if (!userLookup) {
     return res.status(403).send(`No user found for ${req.body.email}, please try again`);
   }
-  if (emailLookUp(req.body.email)) {
-    for (const id in users) {
-      if (req.body.password !== users[id].password) {
-        return res.status(403).send(`<h4>Invalid Password. Please Try Again</h4>`);
-      } else {
-        res.cookie('user_id', users[id].id);
-      }
-    }
+  if (userLookup.password !== req.body.password) {
+    return res.status(403).send(`<h4>Invalid Password. Please Try Again</h4>`);
   }
+  res.cookie('user_id', userLookup.id);
+  console.log(users);
   res.redirect("/urls");
 });
 
