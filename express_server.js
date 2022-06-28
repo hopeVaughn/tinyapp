@@ -114,7 +114,7 @@ app.post("/urls", (req, res) => {
 
 app.post("/login", (req, res) => {
   if (!emailLookUp(req.body.email)) {
-    return res.status(403).json({ msg: `No user found for ${req.body.email}, please try again` });
+    return res.status(403).send(`No user found for ${req.body.email}, please try again`);
   }
   if (emailLookUp(req.body.email)) {
     for (const id in users) {
@@ -143,10 +143,10 @@ app.post("/logout", (req, res) => {
 
 app.post('/register', (req, res) => {
   if (!req.body.email || !req.body.password) {
-    return res.status(400).json({ msg: 'Please enter in a valid email and passord to continue' });
+    return res.status(400).send('Please enter in a valid email and passord to continue');
   }
   if (emailLookUp(req.body.email)) {
-    return res.status(400).json({ msg: 'Email already exists. Please try again' });
+    return res.status(400).send('Email already exists. Please try again');
   }
   const userID = generateRandomString();
   users[userID] = {
