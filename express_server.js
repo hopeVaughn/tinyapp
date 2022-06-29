@@ -49,41 +49,60 @@ const emailLookUp = function(email) {
   return false;
 };
 
+const urlsForUser = function(id) {
+  let userURLS = {};
+  for (const ele in urlDatabase) {
+
+    if (id === urlDatabase[ele].userID) {
+      userURLS = { ...userURLS, [ele]: urlDatabase[ele] };
+    }
+  }
+  return userURLS;
+};
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // routes rendered via /urls
 ///////////////////////////////////////////////////////////////////////////////
 
 app.get('/urls', (req, res) => {
-  const templateVars = { user: users[req.cookies["user_id"]], urls: urlDatabase };
+  if (!req.cookies.user_id) {
+    return res.send(`Please <a href='/login'>LOGIN</a> or <a href='/register'>REGISTER</a>`);
+  }
+
+  const userURL = urlsForUser(req.cookies.user_id);
+
+  const templateVars = { user: users[req.cookies.user_id], urls: userURL };
   res.render('urls_index', templateVars);
 });
 
 
 app.get("/urls/new", (req, res) => {
-  if (!req.cookies["user_id"]) {
-    res.redirect('/login')
+  if (!req.cookies) {
+    res.redirect('/login');
   }
-  const templateVars = { user: users[req.cookies["user_id"]] };
+
+  const templateVars = { user: users[req.cookies.user_id] };
   res.render("urls_new", templateVars);
 });
 
 
 app.get("/urls/:shortURL", (req, res) => {
 
-  const shortURL = req.params.shortURL
+  const shortURL = req.params.shortURL;
   const userID = req.cookies.user_id;
   if (!userID) {
-    return res.redirect('/login')
+    return res.redirect('/login');
   }
 
-  const user = users[userID]
+  const user = users[userID];
   if (!user) {
-    return res.send('not logged in')
+    return res.send('not logged in');
   }
 
   const url = urlDatabase[shortURL];
-  const longURL = url.longURL
+  const longURL = url.longURL;
   const templateVars = { user, shortURL, longURL };
   res.render("urls_show", templateVars);
 });
@@ -93,7 +112,7 @@ app.get("/urls/:shortURL", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 app.get("/u/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL
+  const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
   if (!url) {
     return res.send('The shortened url has not been generated yet please try again');
@@ -107,14 +126,14 @@ app.get("/u/:shortURL", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 app.get('/register', (req, res) => {
+
   const userID = req.cookies.user_id;
-  const user = users[userID]
+  const user = users[userID];
 
   if (user) {
-    return res.send('already logged in')
+    return res.send('already logged in');
   }
 
-  const templateVars = { user: null };
   res.render("urls_register", { user: null });
 });
 
@@ -126,7 +145,7 @@ app.get('/login', (req, res) => {
   const userID = req.cookies.user_id;
 
   if (users[userID]) {
-    return res.send('already logged in')
+    return res.send('already logged in');
   }
   res.render("urls_login", { user: null });
 });
@@ -138,9 +157,8 @@ app.get('/login', (req, res) => {
 app.post("/urls", (req, res) => {
   const userID = req.cookies.user_id;
   if (!userID) {
-    return res.status(403).send(`you must login to create a new short url`)
+    return res.status(403).send(`you must login to create a new short url`);
   }
-
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = { longURL, userID };
@@ -200,7 +218,12 @@ app.post('/register', (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+  const userID = req.cookies.user_id;
+  if (urlDatabase[req.params.shortURL].userID !== userID) {
+    return res.send(`you cannot delete a shortURL that you did not create`);
+  } else {
+    delete urlDatabase[req.params.shortURL];
+  }
   res.redirect("/urls");
 });
 
@@ -209,12 +232,18 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////
 
 app.post("/urls/:shortURL", (req, res) => {
-  const userID = req.body.user_id
+  const userID = req.cookies.user_id;
+  if (!userID) {
+    return res.status(403).send(`you must login to create a new short url`);
+  }
+  if (urlDatabase[req.params.shortURL].userID !== userID) {
+    return res.send(`you cannot edit a shortURL that you did not create`);
+  }
   const longURL = req.body.longURL;
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = {
     longURL, userID
-  }
+  };
   res.redirect("/urls");
 });
 
