@@ -9,10 +9,10 @@ This project was created by me, Hope! as part of my learnings at Lighthouse Labs
 ## Final Product
 
 !["landing urls page"]('https://github.com/hopeVaughn/tinyapp/blob/master/landing.png')
-!["Register Page"]('https://github.com/hopeVaughn/tinyapp/blob/master/register.png')
-!["Login Page"]('https://github.com/hopeVaughn/tinyapp/blob/master/login.png')
-!["Create short URL"]('https://github.com/hopeVaughn/tinyapp/blob/master/create.png')
-!["Client specific URL page"]('https://github.com/hopeVaughn/tinyapp/blob/master/savedURLS.png')
+!["Register Page"]('https://github.com/hopeVaughn/tinyapp/blob/master/register.png?raw=true')
+!["Login Page"]('https://github.com/hopeVaughn/tinyapp/blob/master/login.png?raw=true')
+!["Create short URL"]('https://github.com/hopeVaughn/tinyapp/blob/master/create.png?raw=true')
+!["Client specific URL page"]('https://github.com/hopeVaughn/tinyapp/blob/master/savedURLS.png?raw=true')
 
 ## Getting Started
 
