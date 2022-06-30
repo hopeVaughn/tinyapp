@@ -8,7 +8,7 @@ This project was created by me, Hope! as part of my learnings at Lighthouse Labs
 
 ## Final Product
 
-!["landing urls page"]('https://github.com/hopeVaughn/tinyapp/blob/master/landing.png')
+!["landing urls page"]('https://github.com/hopeVaughn/tinyapp/blob/master/landing.png?raw=true')
 !["Register Page"]('https://github.com/hopeVaughn/tinyapp/blob/master/register.png?raw=true')
 !["Login Page"]('https://github.com/hopeVaughn/tinyapp/blob/master/login.png?raw=true')
 !["Create short URL"]('https://github.com/hopeVaughn/tinyapp/blob/master/create.png?raw=true')
