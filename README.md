@@ -8,11 +8,11 @@ This project was created by me, Hope! as part of my learnings at Lighthouse Labs
 
 ## Final Product
 
-!["landing urls page"]('./landing.png')
-!["Register Page"]('./register.png')
-!["Login Page"]('./login.png')
-!["Create short URL"]('./create.png')
-!["Client specific URL page"]('./savedURLS.png')
+!["landing urls page"](./landing.png)
+!["Register Page"](./register.png)
+!["Login Page"](./login.png)
+!["Create short URL"](./create.png)
+!["Client specific URL page"](./savedURLS.png)
 
 ## Getting Started
 
