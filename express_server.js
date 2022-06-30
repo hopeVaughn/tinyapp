@@ -1,6 +1,6 @@
 const express = require('express');
 
-const { getUserByEmail, urlsForUser } = require('./helpers');
+const { getUserByEmail, urlsForUser, generateRandomString } = require('./helpers');
 
 const bodyParser = require("body-parser");
 
@@ -37,21 +37,6 @@ const urlDatabase = {
 };
 
 
-///////////////////////////////////////////////////////////////////////////////
-// helper functions
-///////////////////////////////////////////////////////////////////////////////
-
-const generateRandomString = function() {
-  let randomString = '';
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (let i = 0; i < 6; i++) {
-    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return randomString;
-};
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // routes rendered via /urls
@@ -79,14 +64,15 @@ app.get("/urls/new", (req, res) => {
 
 
 app.get("/urls/:shortURL", (req, res) => {
-
   const shortURL = req.params.shortURL;
   const userID = req.session.user_id;
+
   if (!userID) {
     return res.redirect('/login');
   }
 
   const user = users[userID];
+
   if (!user) {
     return res.send('not logged in');
   }
@@ -104,6 +90,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
+
   if (!url) {
     return res.send('The shortened url has not been generated yet please try again');
   }
@@ -137,6 +124,7 @@ app.get('/login', (req, res) => {
   if (users[userID]) {
     return res.send('already logged in');
   }
+
   res.render("urls_login", { user: null });
 });
 
@@ -146,65 +134,14 @@ app.get('/login', (req, res) => {
 
 app.post("/urls", (req, res) => {
   const userID = req.session.user_id;
+
   if (!userID) {
     return res.status(403).send(`you must login to create a new short url`);
   }
+
   const longURL = req.body.longURL;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = { longURL, userID };
-  res.redirect("/urls");
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// /login POST endpoint
-///////////////////////////////////////////////////////////////////////////////
-
-app.post("/login", (req, res) => {
-  const user = getUserByEmail(req.body.email, users);
-  const userEmail = req.body.email;
-  const password = req.body.password;
-
-  if (!userEmail || !password) {
-    res.status(400).send('must enter email and/or password to continue');
-  }
-
-  if (!user || !bcrypt.compareSync(password, user.password)) {
-    return res.status(403).send(`<h4>Bad user name or password. Please Try Again</h4>`);
-  }
-
-  req.session.user_id = user.id;
-  res.redirect("/urls");
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// /logout POST endpoint
-///////////////////////////////////////////////////////////////////////////////
-
-app.post("/logout", (req, res) => {
-  req.session = undefined;
-  res.redirect("/urls");
-});
-
-///////////////////////////////////////////////////////////////////////////////
-// add new user to global users object
-///////////////////////////////////////////////////////////////////////////////
-
-app.post('/register', (req, res) => {
-  const email = req.body.email;
-  const textPassword = req.body.password;
-
-  if (!email || !textPassword) {
-    return res.status(400).send('Please enter in a valid email and passord to continue');
-  }
-
-  if (getUserByEmail(email, users)) {
-    return res.status(400).send('Email already exists. Please try again');
-  }
-
-  const id = generateRandomString();
-  const password = bcrypt.hashSync(textPassword, 10);
-  users[id] = { id, email, password };
-  req.session.user_id = id;
   res.redirect("/urls");
 });
 
@@ -214,6 +151,7 @@ app.post('/register', (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const userID = req.session.user_id;
+
   if (urlDatabase[req.params.shortURL].userID !== userID) {
     return res.send(`you cannot delete a shortURL that you did not create`);
   } else {
@@ -228,12 +166,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const userID = req.session.user_id;
+
   if (!userID) {
     return res.status(403).send(`you must login to create a new short url`);
   }
+
   if (urlDatabase[req.params.shortURL].userID !== userID) {
     return res.send(`you cannot edit a shortURL that you did not create`);
   }
+
   const longURL = req.body.longURL;
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = {
@@ -242,6 +183,58 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 });
 
+///////////////////////////////////////////////////////////////////////////////
+// add new user to global users object
+///////////////////////////////////////////////////////////////////////////////
+
+app.post('/register', (req, res) => {
+  const email = req.body.email;
+  const textPassword = req.body.password;
+
+  if (!email || !textPassword) {
+    return res.status(400).send('Please enter in a valid email and/or password to continue');
+  }
+
+  if (getUserByEmail(email, users)) {
+    return res.status(400).send('Email already exists. Please try again');
+  }
+
+  const id = generateRandomString();
+  const password = bcrypt.hashSync(textPassword, 10);
+  users[id] = { id, email, password };
+  req.session.user_id = id;
+  res.redirect("/urls");
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// /login POST endpoint
+///////////////////////////////////////////////////////////////////////////////
+
+app.post("/login", (req, res) => {
+  const user = getUserByEmail(req.body.email, users);
+  const userEmail = req.body.email;
+  const password = req.body.password;
+
+  if (!userEmail || !password) {
+    return res.status(400).send('must enter email and/or password to continue');
+  }
+
+  if (!user || !bcrypt.compareSync(password, user.password)) {
+    return res.status(403).send(`<h4>Bad user name or password. Please <a href = '/register'>REGISTER</a> Or Try Again</h4>`);
+  }
+
+  req.session.user_id = user.id;
+  res.redirect("/urls");
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// /logout POST endpoint
+///////////////////////////////////////////////////////////////////////////////
+
+app.post("/logout", (req, res) => {
+  req.session = undefined;
+  res.redirect("/urls");
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // PORT listening confirmation
