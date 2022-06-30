@@ -25,6 +25,7 @@ This project was created by me, Hope! as part of my learnings at Lighthouse Labs
 
 ## Included Files
 
+- helpersTest.js `helperTest function that would use mocha to test functionality`
 - express_server.js `creates a server for tinyApp to run`
 - helpers.js `modularized helper function file`
 - package.json `npm initialized json file`
