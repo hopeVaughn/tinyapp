@@ -8,16 +8,17 @@ This project was created by me, Hope! as part of my learnings at Lighthouse Labs
 
 ## Final Product
 
-!["landing urls page"](./landing.png)
-!["Register Page"](./register.png)
-!["Login Page"](./login.png)
-!["Create short URL"](./create.png)
-!["Client specific URL page"](./savedURLS.png)
+!["landing urls page"](https://github.com/hopeVaughn/tinyapp/blob/master/landing.png)
+!["Register Page"](https://github.com/hopeVaughn/tinyapp/blob/master/register.png)
+!["Login Page"](https://github.com/hopeVaughn/tinyapp/blob/master/login.png)
+!["Create short URL"](https://github.com/hopeVaughn/tinyapp/blob/master/create.png)
+!["Client specific URL page"](https://github.com/hopeVaughn/tinyapp/blob/master/savedURLS.png)
 
 ## Getting Started
 
 - tinyApp repo can be found at `https://github.com/hopeVaughn/tinyapp`
-- Run the node server by useing `node express_server.js`
+- Install all dependencies (using the `npm install` command).
+- Run the development web server using the `node express_server.js` command.
 - Open your web browser to `http://localhost:8080/urls`
 - Register as many new user e-mail and password as you'd like. Each user will have their own specific short urls data
 - Create your very own short URL's
